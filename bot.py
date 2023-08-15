@@ -135,3 +135,20 @@ async def check_reminders():
             await user.send(f"⏰ Reminder: {reminder[2]}")
         cursor.execute("DELETE FROM reminders WHERE id = ?", (reminder[0],))
         conn.commit()
+
+# Assign role based on reaction
+@bot.command()
+async def reactrole(ctx, role: discord.Role, emoji: str, *, message: str):
+    embed = discord.Embed(title="React to Get Role", description=message, color=discord.Color.purple())
+    react_message = await ctx.send(embed=embed)
+    await react_message.add_reaction(emoji)
+
+    @bot.event
+    async def on_raw_reaction_add(payload):
+        if payload.message_id == react_message.id and str(payload.emoji) == emoji:
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            if member:
+                await member.add_roles(role)
+                await member.send(f"You have been given the '{role.name}' role!")
+
