@@ -152,3 +152,7 @@ async def reactrole(ctx, role: discord.Role, emoji: str, *, message: str):
                 await member.add_roles(role)
                 await member.send(f"You have been given the '{role.name}' role!")
 
+@bot.command()
+async def fetch_logs(ctx, limit: int = 10):
+    cursor.execute("SELECT username, message_content, timestamp FROM messages ORDER BY id DESC LIMIT ?", (limit,))
+    rows = cursor.fetchall()
