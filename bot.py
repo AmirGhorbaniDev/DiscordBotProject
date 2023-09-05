@@ -136,6 +136,7 @@ async def check_reminders():
         cursor.execute("DELETE FROM reminders WHERE id = ?", (reminder[0],))
         conn.commit()
 
+
 # Assign role based on reaction
 @bot.command()
 async def reactrole(ctx, role: discord.Role, emoji: str, *, message: str):
@@ -152,7 +153,15 @@ async def reactrole(ctx, role: discord.Role, emoji: str, *, message: str):
                 await member.add_roles(role)
                 await member.send(f"You have been given the '{role.name}' role!")
 
+
+# Fetch messages from the database
 @bot.command()
 async def fetch_logs(ctx, limit: int = 10):
     cursor.execute("SELECT username, message_content, timestamp FROM messages ORDER BY id DESC LIMIT ?", (limit,))
     rows = cursor.fetchall()
+    logs = "\n".join([f"[{row[2]}] {row[0]}: {row[1]}" for row in rows])
+    await ctx.send(f"**Last {limit} Messages:**\n{logs}")
+
+
+# Run the bot (replace with your bot token)
+bot.run("YOUR_BOT_TOKEN")
